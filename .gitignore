@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# PyTorch / models
+*.pt
+*.pth
+checkpoints/
+results/
+
+# Data (dataset lớn)
+data/*.npy
+data/*.npz
+data/*.pt
+
+# C++
+build/
+*.o
+*.out
+*.exe
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode / IDE
+.vscode/
+.idea/

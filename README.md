@@ -11,13 +11,13 @@ to learn heuristics for solving the Traveling Salesman Problem (TSP).
 
 ## Project Structure
 - `cpp/` : TSP data generation and baseline solvers
-- `src/` : PyTorch models and training scripts
+- `python/` : PyTorch models and training scripts
 - `notebooks/` : Visualization and analysis
 
 ## Setup
 
 ```bash
-git clone https://github.com/YOUR_NAME/neural-tsp.git
+git clone https://github.com/nguyencungthanh/neural-tsp.git
 cd neural-tsp
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
