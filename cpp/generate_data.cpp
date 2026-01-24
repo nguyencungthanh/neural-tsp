@@ -7,6 +7,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
+    cout.tie(nullptr);
 
     if (argc < 4) {
         cout << "Usage: ./generate_data <num_instances> <num_points> <output_file>\n";

@@ -107,8 +107,8 @@ int main() {
     }
 
     cout << fixed << setprecision(6);
-    cout << "NN " << total_nn / num_instances << "\n";
-    cout << "2OPT " << total_2opt / num_instances << "\n";
+    cout << "NN's model average tour: " << total_nn / num_instances << "\n";
+    cout << "2OPT's model average tour: " << total_2opt / num_instances << "\n";
 
     return 0;
 }

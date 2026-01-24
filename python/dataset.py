@@ -1,13 +1,12 @@
 import torch
-from torch.utils.data import Dataset
 
-class TSPDataset(Dataset):
-    def __init__(self, path="../data/tsp_n12_supervised.txt"):
+class TSPDataset(torch.utils.data.Dataset):
+    def __init__(self, filename):
             
         self.points = []
         self.tours = []
 
-        with open("../data/tsp_n12_supervised.txt", 'r') as f:
+        with open(filename) as f:
             num_instances, n = map(int, f.readline().split())
 
             for _ in range(num_instances):
@@ -27,5 +26,3 @@ class TSPDataset(Dataset):
     def __getitem__(self, idx):
         return self.points[idx], self.tours[idx]
 
-# ds = TSPDataset("data/train_sup_n12.txt")
-# print(ds[0][1])  # in tour đầu tiên
