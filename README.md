@@ -1,3 +1,23 @@
+<script>
+    window.MathJax = {
+        loader: {load: ['[tex]/ams']},
+        tex: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            packages: {'[+]': ['ams']}
+        },
+        svg: {fontCache: 'global'},
+        useLabelIds: true
+    };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+mjx-container[jax="SVG"][display="true"] {
+    display: block;
+    text-align: center;
+    margin: 1em auto;
+}
+</style>
+
 # 🧠 Neural Combinatorial Optimization for the Traveling Salesman Problem (TSP)
 
 This project explores learning-based approaches for solving the **Euclidean Traveling Salesman Problem (TSP)** using:
@@ -61,7 +81,7 @@ x y
 
 ```bash
 g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 10000 12 ../data/tsp_n12_raw.txt   # generate data for supervised learning
-g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 100000 20 ../data/tsp_train.txt     # generate data for reinforcement learning
+g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 100000 20 ../data/tsp_train.txt   # generate data for reinforcement learning
 g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 5000 20 ../data/tsp_eval_20.txt   # generate data for evaluation 
 ``` 
 
