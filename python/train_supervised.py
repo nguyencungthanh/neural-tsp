@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-dataset = TSPDataset("../data/tsp_n12_supervised.txt")
+dataset = TSPDataset("../data/train_supervised.txt")
 loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
 model = PointerNet().to(device)

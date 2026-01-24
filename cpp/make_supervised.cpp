@@ -83,11 +83,11 @@ int main() {
         auto result = held_karp(pts);
         auto& tour = result.second;
 
-        // Ghi lại tọa độ
+        // Store the coordinates
         for (auto &p : pts)
             cout << p.x << " " << p.y << "\n";
 
-        // Ghi tour tối ưu
+        // Store the optimized tour
         for (int i = 0; i < n; i++)
             cout << tour[i] << (i+1<n ? ' ' : '\n');
     }

@@ -6,7 +6,7 @@ from eval_utils import tour_length
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-dataset = TSPDatasetRL("../data/tsp_train.txt")
+dataset = TSPDatasetRL("../data/train_rl.txt")
 loader = DataLoader(dataset, batch_size=256, shuffle=True)
 
 model = PointerNet(embed_dim=128, hidden_dim=128).to(device)

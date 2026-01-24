@@ -60,16 +60,18 @@ x y
 ``` 
 
 ```bash
-g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 10000 12 ../data/tsp_n12_raw.txt   # generate data for supervised learning
-g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 100000 20 ../data/tsp_train.txt   # generate data for reinforcement learning
-g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 5000 20 ../data/tsp_eval_20.txt   # generate data for evaluation 
+g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 100000 12 ../data/train_raw.txt   # generate data for training supervised learning
+g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 10000 12 ../data/test_raw.txt    # generate data for testing supervised learning
+g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 100000 20 ../data/train_rl.txt       # generate data for reinforcement learning
+g++ -std=c++17 generate_data.cpp -o generate_data && ./generate_data 5000 20 ../data/eval.txt                 # generate data for evaluation 
 ``` 
 
 ## 2️⃣ Compute optimal tours (Held–Karp)
 
 Convert raw instances into supervised training data:
 ```bash 
-g++ -std=c++17 make_supervised.cpp -o make_supervised && ./make_supervised < ../data/tsp_n12_raw.txt > ../data/tsp_n12_supervised.txt
+g++ -std=c++17 make_supervised.cpp -o make_supervised && ./make_supervised < ../data/train_raw.txt > ../data/train_supervised.txt
+g++ -std=c++17 make_supervised.cpp -o make_supervised && ./make_supervised < ../data/test_raw.txt > ../data/test_supervised.txt
 ``` 
 
 # 🤖 Model: Pointer Network
@@ -103,7 +105,7 @@ Reward: Negative tour length
 Compare the learned model against classical heuristics:
 ```bash 
 python eval_rl.py
-g++ -std=c++17 baselines.cpp -o baselines && ./baselines < ../data/tsp_eval_20.txt
+g++ -std=c++17 baselines.cpp -o baselines && ./baselines < ../data/eval.txt
 ```
 
 Metrics: 
