@@ -1,23 +1,3 @@
-<script>
-    window.MathJax = {
-        loader: {load: ['[tex]/ams']},
-        tex: {
-            inlineMath: [['$','$'], ['\\(','\\)']],
-            packages: {'[+]': ['ams']}
-        },
-        svg: {fontCache: 'global'},
-        useLabelIds: true
-    };
-</script>
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-<style>
-mjx-container[jax="SVG"][display="true"] {
-    display: block;
-    text-align: center;
-    margin: 1em auto;
-}
-</style>
-
 # 🧠 Neural Combinatorial Optimization for the Traveling Salesman Problem (TSP)
 
 This project explores learning-based approaches for solving the **Euclidean Traveling Salesman Problem (TSP)** using:
@@ -96,10 +76,10 @@ g++ -std=c++17 make_supervised.cpp -o make_supervised && ./make_supervised < ../
 We use a **Pointer Network** to model permutations. The model learns to output a sequence of city indices representing a tour.
 
 **Inputs:**
-$[\text{batch\_size}, n, 2]$ point coordinates
+[batch size, n, 2] point coordinates
 
 **Outputs:**
-A permutation of $\{0, … ,n-1\}$
+A permutation of {0, … ,n-1}
 
 # 🎯 Training
 **Supervised Learning (Imitation of Optimal Tours)** 
