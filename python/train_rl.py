@@ -37,6 +37,16 @@ critic.train()
 optimizer_actor = torch.optim.Adam(actor.parameters(), lr=LR_ACTOR)
 optimizer_critic = torch.optim.Adam(critic.parameters(), lr=LR_CRITIC)
 
+# Learning rate schedulers (paper: decay by 0.96 every 5000 steps)
+scheduler_actor = torch.optim.lr_scheduler.StepLR(
+    optimizer_actor, step_size=LR_DECAY_STEPS, gamma=LR_DECAY
+)
+scheduler_critic = torch.optim.lr_scheduler.StepLR(
+    optimizer_critic, step_size=LR_DECAY_STEPS, gamma=LR_DECAY
+)
+
+global_step = 0
+
 for epoch in range(EPOCHS):
     total_reward = 0
     num_batches = 0
@@ -60,7 +70,6 @@ for epoch in range(EPOCHS):
         baseline = critic(points_shuffled)
 
         # Advantage = -(L - b) since reward = -length
-        # We use negative tour length as reward
         advantage = -(lengths - baseline.detach())
 
         # Actor loss: policy gradient (Eq. 5)
@@ -81,11 +90,17 @@ for epoch in range(EPOCHS):
         torch.nn.utils.clip_grad_norm_(critic.parameters(), GRAD_CLIP)
         optimizer_critic.step()
 
+        # Step learning rate schedulers
+        scheduler_actor.step()
+        scheduler_critic.step()
+
         total_reward += (-lengths).mean().item()
         num_batches += 1
+        global_step += 1
 
     avg_len = -total_reward / num_batches
-    print(f"Epoch {epoch+1}/{EPOCHS}, Avg tour length: {avg_len:.4f}")
+    lr = optimizer_actor.param_groups[0]["lr"]
+    print(f"Epoch {epoch+1}/{EPOCHS}, Avg tour length: {avg_len:.4f}, LR: {lr:.6f}, Step: {global_step}")
 
 # Save actor and critic
 torch.save(actor.state_dict(), "actor.pt")
