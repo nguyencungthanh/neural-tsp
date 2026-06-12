@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.utils.data import DataLoader
 from dataset_rl import TSPDatasetRL
@@ -15,6 +16,10 @@ LR_CRITIC = 1e-4
 LR_DECAY = 0.96
 LR_DECAY_STEPS = 5000
 GRAD_CLIP = 1.0
+CHECKPOINT_EVERY = 5  # save checkpoint every N epochs
+
+# Create checkpoint directory
+os.makedirs("checkpoints", exist_ok=True)
 
 # Load training data
 dataset = TSPDatasetRL("../data/train_rl.txt")
@@ -45,9 +50,27 @@ scheduler_critic = torch.optim.lr_scheduler.StepLR(
     optimizer_critic, step_size=LR_DECAY_STEPS, gamma=LR_DECAY
 )
 
+start_epoch = 0
 global_step = 0
 
-for epoch in range(EPOCHS):
+# Resume from latest checkpoint if available
+checkpoints = sorted([f for f in os.listdir("checkpoints") if f.endswith(".pt")])
+if checkpoints:
+    latest = checkpoints[-1]
+    ckpt = torch.load(f"checkpoints/{latest}", map_location=device)
+    actor.load_state_dict(ckpt["actor"])
+    critic.load_state_dict(ckpt["critic"])
+    optimizer_actor.load_state_dict(ckpt["optimizer_actor"])
+    optimizer_critic.load_state_dict(ckpt["optimizer_critic"])
+    scheduler_actor.load_state_dict(ckpt["scheduler_actor"])
+    scheduler_critic.load_state_dict(ckpt["scheduler_critic"])
+    start_epoch = ckpt["epoch"] + 1
+    global_step = ckpt["global_step"]
+    actor.train()
+    critic.train()
+    print(f"Resumed from checkpoint: {latest} (epoch {start_epoch}, step {global_step})")
+
+for epoch in range(start_epoch, EPOCHS):
     total_reward = 0
     num_batches = 0
 
@@ -102,7 +125,23 @@ for epoch in range(EPOCHS):
     lr = optimizer_actor.param_groups[0]["lr"]
     print(f"Epoch {epoch+1}/{EPOCHS}, Avg tour length: {avg_len:.4f}, LR: {lr:.6f}, Step: {global_step}")
 
-# Save actor and critic
+    # Save checkpoint every N epochs
+    if (epoch + 1) % CHECKPOINT_EVERY == 0 or (epoch + 1) == EPOCHS:
+        ckpt_path = f"checkpoints/ckpt_epoch{epoch+1}.pt"
+        torch.save({
+            "epoch": epoch,
+            "global_step": global_step,
+            "actor": actor.state_dict(),
+            "critic": critic.state_dict(),
+            "optimizer_actor": optimizer_actor.state_dict(),
+            "optimizer_critic": optimizer_critic.state_dict(),
+            "scheduler_actor": scheduler_actor.state_dict(),
+            "scheduler_critic": scheduler_critic.state_dict(),
+            "avg_tour_length": avg_len,
+        }, ckpt_path)
+        print(f"  Checkpoint saved: {ckpt_path}")
+
+# Save final models
 torch.save(actor.state_dict(), "actor.pt")
 torch.save(critic.state_dict(), "critic.pt")
 print("Saved actor.pt and critic.pt")
