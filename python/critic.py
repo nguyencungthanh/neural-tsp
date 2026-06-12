@@ -36,14 +36,14 @@ class CriticNet(nn.Module):
         x: (B, n, 2) city coordinates
         Returns: (B,) predicted expected tour length for each graph
         """
-        embedded = self.embedding(x)                        # (B, n, d)
-        enc_out, (h, c) = self.encoder(embedded)            # enc_out: (B, n, d)
+        embedded = self.embedding(x)    # (B, n, d)
+        enc_out, (h, c) = self.encoder(embedded)    # enc_out: (B, n, d)
 
         # Process block: start from final hidden state, glimpse P times
-        g = h.squeeze(0)                                     # (B, d)
+        g = h.squeeze(0)    # (B, d)
         for _ in range(self.process_steps):
             g = self.glimpse(enc_out, g)
 
         # Decode to scalar baseline
-        baseline = self.decoder(g).squeeze(-1)               # (B,)
+        baseline = self.decoder(g).squeeze(-1)  # (B,)
         return baseline
