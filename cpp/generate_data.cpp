@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
     cin.tie(nullptr);
     cout.tie(nullptr);
 
+    // Debug 
     if (argc < 4) {
         cout << "Usage: ./generate_data <num_instances> <num_points> <output_file>\n";
         return 1;
