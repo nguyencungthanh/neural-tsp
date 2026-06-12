@@ -25,6 +25,7 @@ for epoch in range(5):
 
         _, tours, log_probs = model(points)
 
+
         lengths = tour_length(points, tours)
         reward = -lengths
 
