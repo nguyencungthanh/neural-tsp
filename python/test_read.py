@@ -1,6 +1,6 @@
 from tsp_utils import load_dataset, tour_length
 
-data = load_dataset("../data/tsp_train.txt")
+data = load_dataset("../data/train_rl.txt")  # n=20 raw points (count n, then points)
 print(data.shape)  # (100000, 20, 2)
 
 points = data[0]

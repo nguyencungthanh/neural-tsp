@@ -65,12 +65,14 @@ class PointerNet(nn.Module):
             self.W_ref(ref) + self.W_q(q).unsqueeze(1)
         )).squeeze(-1)  # (B, n)
 
-        # Mask already-visited cities
-        scores = scores.masked_fill(mask, -1e9)
-
-        # Eq. 16: logit clipping
+        # Eq. 16: logit clipping (applied to unmasked logits)
         if self.clip_logits > 0:
             scores = self.clip_logits * torch.tanh(scores)
+
+        # Mask already-visited cities AFTER clipping, using -inf so softmax gives
+        # them exactly zero probability. (Masking before the tanh clip would leave
+        # residual mass: C*tanh(-1e9) = -C, not -inf, so a masked city could be sampled.)
+        scores = scores.masked_fill(mask, float("-inf"))
 
         # Eq. 15: temperature
         probs = torch.softmax(scores / temperature, dim=1)
@@ -142,10 +144,12 @@ class PointerNet(nn.Module):
         return outputs, tours, log_probs
 
     @staticmethod
-    def tsp_loss(logits, target):
-        """Cross-entropy loss for supervised training."""
-        B, n, _ = logits.shape
-        return F.cross_entropy(
-            logits.view(B * n, -1),
-            target.view(-1)
-        )
+    def tsp_loss(probs, target):
+        """Cross-entropy loss for supervised training.
+
+        NOTE: the model returns post-softmax probabilities, so we take log and use
+        NLLLoss. F.cross_entropy would re-apply log_softmax (double-softmax).
+        """
+        B, n, _ = probs.shape
+        log_probs = torch.log(probs.clamp_min(1e-30))
+        return F.nll_loss(log_probs.view(B * n, -1), target.view(-1))

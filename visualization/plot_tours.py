@@ -11,7 +11,7 @@ from random import randint
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load one test instance
-dataset = TSPDataset("../data/tsp_n12_supervised.txt")
+dataset = TSPDataset("../data/train_supervised.txt")  # n=12 points + optimal tours
 points, optimal_tour = dataset[randint(1, 10000)]
 
 # Load trained model

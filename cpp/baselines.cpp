@@ -59,18 +59,15 @@ void two_opt(vector<int>& tour, const vector<Point>& pts) {
 
     while (improved) {
         improved = false;
-        for (int i = 1; i < n-2; i++) {
-            for (int k = i+1; k < n-1; k++) {
-                int a = tour[i-1];
-                int b = tour[i];
-                int c = tour[k];
-                int d = tour[(k+1)%n];
-
+        for (int i = 1; i < n; i++) {
+            int a = tour[i-1], b = tour[i];
+            for (int j = i+1; j <= n; j++) {
+                int c = tour[j-1], d = tour[j % n];
+                if (d == b) continue;  
                 double old_dist = dist(pts[a], pts[b]) + dist(pts[c], pts[d]);
                 double new_dist = dist(pts[a], pts[c]) + dist(pts[b], pts[d]);
-
                 if (new_dist < old_dist) {
-                    reverse(tour.begin()+i, tour.begin()+k+1);
+                    reverse(tour.begin()+i, tour.begin()+j);
                     improved = true;
                 }
             }

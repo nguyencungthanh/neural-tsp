@@ -49,9 +49,9 @@ def active_search(points, model=None, state_dict_path=None,
 
     for step in range(num_steps):
         # Input shuffling: randomly permute city order per sample in batch
-        perms = torch.stack([torch.randperm(n) for _ in range(batch_size)])  # (B, n)
+        perms = torch.stack([torch.randperm(n) for _ in range(batch_size)]).to(device)  # (B, n)
         idx = perms.unsqueeze(-1).expand(-1, -1, 2)  # (B, n, 2)
-        points_shuffled = torch.gather(points_batch, 1, idx.to(device))
+        points_shuffled = torch.gather(points_batch, 1, idx)
 
         # Sample tours from policy
         _, tours, log_probs = model(points_shuffled)
@@ -59,12 +59,13 @@ def active_search(points, model=None, state_dict_path=None,
         # Compute tour lengths on the shuffled points
         lengths = tour_length(points_shuffled, tours)
 
-        # Track best solution found so far
+        # Track best solution found so far. Map the tour back from the shuffled
+        # space to original city indices so the returned tour is directly usable.
         min_idx = lengths.argmin()
         min_length = lengths[min_idx].item()
         if min_length < best_length:
             best_length = min_length
-            best_tour = tours[min_idx].cpu()
+            best_tour = perms[min_idx][tours[min_idx]].cpu()  # original-space tour
 
         # Exponential moving average baseline (Eq. in Algorithm 2)
         if baseline is None:

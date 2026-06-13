@@ -54,9 +54,14 @@ start_epoch = 0
 global_step = 0
 
 # Resume from latest checkpoint if available
-checkpoints = sorted([f for f in os.listdir("checkpoints") if f.endswith(".pt")])
+# Resume from latest checkpoint if available. Sort by epoch NUMBER, not lexically,
+# otherwise ckpt_epoch20.pt sorts before ckpt_epoch5.pt and resume loads the wrong one.
+def _epoch_of(fname):
+    return int(fname.replace("ckpt_epoch", "").replace(".pt", ""))
+
+checkpoints = [f for f in os.listdir("checkpoints") if f.endswith(".pt")]
 if checkpoints:
-    latest = checkpoints[-1]
+    latest = max(checkpoints, key=_epoch_of)
     ckpt = torch.load(f"checkpoints/{latest}", map_location=device)
     actor.load_state_dict(ckpt["actor"])
     critic.load_state_dict(ckpt["critic"])
@@ -79,9 +84,11 @@ for epoch in range(start_epoch, EPOCHS):
         B = points.size(0)
         n = points.size(1)
 
-        # Input shuffling: randomly permute city order per instance
-        perm = torch.randperm(n, device=device)
-        points_shuffled = points[:, perm, :]
+        # Input shuffling: randomly permute city order PER INSTANCE (paper Sec 4),
+        # so each instance in the batch gets a different city ordering.
+        perms = torch.stack([torch.randperm(n, device=device) for _ in range(B)])
+        idx = perms.unsqueeze(-1).expand(-1, -1, 2)
+        points_shuffled = torch.gather(points, 1, idx)
 
         # Sample tours from actor (Eq. 2-3)
         _, tours, log_probs = actor(points_shuffled)

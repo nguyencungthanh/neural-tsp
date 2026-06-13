@@ -17,8 +17,11 @@ for epoch in range(30):
     for points, tours in loader:
         points, tours = points.to(device), tours.to(device)
 
-        logits, _, _ = model(points, tours)
-        loss = F.cross_entropy(logits.view(-1, logits.size(-1)), tours.view(-1))
+        probs, _, _ = model(points, tours)            # post-softmax distributions
+        # Use NLL with log-probs: the model returns probabilities, not raw logits,
+        # so F.cross_entropy (which re-applies log_softmax) would double-softmax.
+        log_probs = torch.log(probs.clamp_min(1e-30))
+        loss = F.nll_loss(log_probs.view(-1, log_probs.size(-1)), tours.view(-1))
 
         optimizer.zero_grad()
         loss.backward()
