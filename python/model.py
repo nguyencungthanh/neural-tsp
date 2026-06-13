@@ -76,11 +76,14 @@ class PointerNet(nn.Module):
         probs = torch.softmax(scores / temperature, dim=1)
         return probs
 
-    def forward(self, x, target=None, temperature=1.0):
+    def forward(self, x, target=None, temperature=1.0, sample=False):
         """
         x:           (B, n, 2) city coordinates
         target:      (B, n) tour indices for teacher forcing (supervised training)
         temperature: softmax temperature (1.0 during training, >1 for exploration)
+        sample:      if True, sample from the policy even in eval mode (Sampling
+                     inference). Ignored when target is given; training
+                     (self.training) always samples regardless of this flag.
         """
         B, n, _ = x.size()
 
@@ -111,19 +114,19 @@ class PointerNet(nn.Module):
             if target is not None:
                 # Teacher forcing (supervised training)
                 next_idx = target[:, t]
+                log_prob = None
+            elif self.training or sample:
+                # Sample from policy (RL training, or Sampling inference)
+                dist = torch.distributions.Categorical(probs)
+                next_idx = dist.sample()
+                log_prob = dist.log_prob(next_idx)
             else:
-                if self.training:
-                    # Sample from policy (RL training)
-                    dist = torch.distributions.Categorical(probs)
-                    next_idx = dist.sample()
-                    log_prob = dist.log_prob(next_idx)
-                else:
-                    # Greedy decode (inference)
-                    next_idx = probs.argmax(dim=1)
-                    log_prob = None
+                # Greedy decode (inference)
+                next_idx = probs.argmax(dim=1)
+                log_prob = None
 
-                if log_prob is not None:
-                    log_probs.append(log_prob)
+            if log_prob is not None:
+                log_probs.append(log_prob)
 
             tours.append(next_idx)
 

@@ -34,3 +34,9 @@ Thumbs.db
 # VSCode / IDE
 .vscode/
 .idea/
+
+# Reports & docs — only README.md is tracked; ignore all other .md, .tex, .pdf
+*.md
+!README.md
+*.tex
+*.pdf

@@ -41,8 +41,8 @@ def sample_tours(model, points, num_samples=1280, temperature=2.0,
             # Replicate the single instance into a batch
             points_batch = points.unsqueeze(0).expand(bs, -1, -1)  # (bs, n, 2)
 
-            # Sample tours with temperature
-            _, tours, _ = model(points_batch, temperature=temperature)
+            # Sample tours with temperature (sample=True so we sample even in eval mode)
+            _, tours, _ = model(points_batch, temperature=temperature, sample=True)
 
             # Compute tour lengths
             lengths = tour_length(points_batch, tours)
