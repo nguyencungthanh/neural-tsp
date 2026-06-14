@@ -35,7 +35,7 @@ print(f"Average tour length: {total_len / n_instances:.4f}")
 # 2. RL pretraining-Sampling (with tuned temperature)
 # ============================================================
 print("\n=== RL pretraining-Sampling ===")
-for num_samples in [128, 1280, 12800]:
+for num_samples in [128, 1280]:
     for temp in [1.5, 2.0, 2.2]:
         total_len = 0
         for i in range(n_instances):

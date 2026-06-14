@@ -1,0 +1,5 @@
+# Compiled baseline binary (auto-built by run_study.py)
+_build/
+
+# Generated datasets (fully reproducible via generate_ood.py)
+data/
