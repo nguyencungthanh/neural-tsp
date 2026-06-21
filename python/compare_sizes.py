@@ -39,8 +39,8 @@ from active_search import active_search   # noqa: E402
 
 # ============================ knobs (edit me) ============================
 SIZES = [10, 12, 15]
-NUM_INSTANCES = 50        # active search is expensive; 1000 is infeasible (~tens of h)
-NUM_STEPS = 5000          # gradient steps per instance (matches eval_rl.py / paper)
+NUM_INSTANCES = 20        # active search is expensive; kept small for tractable runtime
+NUM_STEPS = 1000          # gradient steps per instance (reduced from 5000 for speed)
 BATCH_SIZE = 128
 AS_LR = 1e-5              # active-search learning rate (pretrained start)
 ACTOR_PATH = "actor.pt"
