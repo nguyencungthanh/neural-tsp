@@ -67,11 +67,30 @@ def gen_ring(num, n, rng, sigma=0.015):
     return np.clip(out, 0.0, 1.0)
 
 
+def gen_two_moons(num, n, rng, noise=0.03):
+    """Two interleaving half-circles (sklearn-style moons) - a non-convex
+    distribution none of uniform/clustered/grid/ring reproduce. Each city is
+    assigned to the upper or lower moon at random; the angle is uniform on [0, pi].
+    Output is rescaled into [0, 1]^2 (independent of n and noise).
+    """
+    out = np.empty((num, n, 2))
+    for i in range(num):
+        upper = rng.random(n) < 0.5                       # which moon each city belongs to
+        theta = rng.uniform(0.0, np.pi, size=n)           # angle along the half-circle
+        x = np.where(upper, np.cos(theta), 1.0 - np.cos(theta))
+        y = np.where(upper, np.sin(theta), 0.5 - np.sin(theta))
+        pts = np.stack([x, y], axis=1) + rng.normal(0.0, noise, size=(n, 2))
+        lo, hi = pts.min(axis=0), pts.max(axis=0)
+        out[i] = np.clip((pts - lo) / (hi - lo + 1e-9), 0.0, 1.0)
+    return out
+
+
 GENERATORS = {
     "uniform": gen_uniform,
     "clustered": gen_clustered,
     "grid": gen_grid,
     "ring": gen_ring,
+    "two_moons": gen_two_moons,
 }
 
 
@@ -86,7 +105,7 @@ def _shuffle_order(pts, rng):
 # Stable per-distribution seed offsets. (Do NOT use hash(name) -- Python's
 # string hash is randomized per process via PYTHONHASHSEED, which would make
 # generation non-reproducible across runs.)
-SEED_OFFSETS = {"uniform": 0, "clustered": 1, "grid": 2, "ring": 3}
+SEED_OFFSETS = {"uniform": 0, "clustered": 1, "grid": 2, "ring": 3, "two_moons": 4}
 
 
 def generate_distribution(name, num, n, seed=0):

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 struct Point {
@@ -82,11 +83,18 @@ void two_opt(vector<int>& tour, const vector<Point>& pts) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    // --per-instance: in addition to the averages, print one
+    //   "PI <i> <nn_len> <2opt_len>" line per instance, so callers can compute
+    //   their own mean/std. Default behaviour (no flag) is unchanged, and the
+    //   average lines are always printed, so existing callers are unaffected.
+    bool per_instance = (argc > 1 && string(argv[1]) == "--per-instance");
+
     ios::sync_with_stdio(false);
-    cin.tie(nullptr);   
+    cin.tie(nullptr);
     cout.tie(nullptr);
-    
+    cout << fixed << setprecision(6);   // set once, so PI lines are formatted too
+
     int num_instances, n;
     cin >> num_instances >> n;
 
@@ -108,9 +116,12 @@ int main() {
 
         total_nn += len_nn;
         total_2opt += len_2opt;
+
+        if (per_instance) {
+            cout << "PI " << inst << " " << len_nn << " " << len_2opt << "\n";
+        }
     }
 
-    cout << fixed << setprecision(6);
     cout << "NN's model average tour: " << total_nn / num_instances << "\n";
     cout << "2OPT's model average tour: " << total_2opt / num_instances << "\n";
 
