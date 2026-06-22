@@ -69,7 +69,12 @@ def ensure_data(num, n, seed):
 def ensure_baselines():
     os.makedirs(BUILD_DIR, exist_ok=True)
     binp = os.path.join(BUILD_DIR, "baselines")
-    if not os.path.exists(binp) or os.path.getmtime(CPP_BASELINES) > os.path.getmtime(binp):
+    # Recompile if missing, stale, OR not executable. The last check matters because a
+    # binary copied from Google Drive loses its +x bit, so an existing-but-non-executable
+    # binary would raise PermissionError when subprocess tries to run it.
+    if (not os.path.exists(binp)
+            or os.path.getmtime(CPP_BASELINES) > os.path.getmtime(binp)
+            or not os.access(binp, os.X_OK)):
         print("[baselines] compiling cpp/baselines.cpp ...")
         subprocess.run(["g++", "-std=c++17", "-O2", CPP_BASELINES, "-o", binp], check=True)
     return binp

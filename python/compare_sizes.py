@@ -61,7 +61,11 @@ METHODS = [
 def ensure_baselines():
     binp = os.path.join(CPP_DIR, "baselines")
     src = os.path.join(CPP_DIR, "baselines.cpp")
-    if not os.path.exists(binp) or os.path.getmtime(src) > os.path.getmtime(binp):
+    # Recompile if missing, stale, OR not executable. A binary copied from Google Drive
+    # loses its +x bit and would raise PermissionError at run time; recompiling fixes it.
+    if (not os.path.exists(binp)
+            or os.path.getmtime(src) > os.path.getmtime(binp)
+            or not os.access(binp, os.X_OK)):
         print("[baselines] compiling cpp/baselines.cpp ...")
         subprocess.run(["g++", "-std=c++17", "-O2", src, "-o", binp], check=True)
     return binp
