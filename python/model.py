@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Glimpse(nn.Module):
     """
     Glimse mechanism (Appendix A.1, Eq. 11-14).

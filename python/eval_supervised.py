@@ -21,7 +21,7 @@ with torch.no_grad():
         points = points.to(device)
         optimal_tour = optimal_tour.to(device)
 
-        _, pred_tour, _ = model(points)  # không teacher forcing
+        _, pred_tour, _ = model(points) 
 
         pred_len = tour_length(points, pred_tour)
         opt_len = tour_length(points, optimal_tour)
