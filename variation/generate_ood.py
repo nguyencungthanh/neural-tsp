@@ -107,7 +107,6 @@ def _shuffle_order(pts, rng):
 # generation non-reproducible across runs.)
 SEED_OFFSETS = {"uniform": 0, "clustered": 1, "grid": 2, "ring": 3, "two_moons": 4}
 
-
 def generate_distribution(name, num, n, seed=0):
     """Return (num, n, 2) float array for the named distribution."""
     if name not in GENERATORS:
@@ -119,7 +118,6 @@ def generate_distribution(name, num, n, seed=0):
     rng2 = np.random.default_rng(seed + 100 + off)
     return _shuffle_order(pts, rng2)
 
-
 def write_tsp_file(path, pts):
     """Write (num, n, 2) array in project text format."""
     num, n, _ = pts.shape
@@ -128,7 +126,6 @@ def write_tsp_file(path, pts):
         for inst in pts:
             for x, y in inst:
                 f.write(f"{x:.6f} {y:.6f}\n")
-
 
 def read_tsp_file(path):
     """Read back a project-format file -> (num, n, 2) array (for validation)."""
@@ -140,7 +137,6 @@ def read_tsp_file(path):
             for j in range(n):
                 pts[i, j] = [float(v) for v in f.readline().split()]
     return pts
-
 
 def mean_nn_distance(pts):
     """Mean nearest-neighbour distance per instance, averaged over instances.
@@ -155,7 +151,6 @@ def mean_nn_distance(pts):
         tot += d.min(axis=1).mean()
     return tot / num
 
-
 def validate(path, expected_num, expected_n):
     """Read back and sanity-check a generated file. Raises on any problem."""
     pts = read_tsp_file(path)
@@ -165,7 +160,6 @@ def validate(path, expected_num, expected_n):
     assert np.isfinite(pts).all(), f"{path}: non-finite coordinate present"
     assert pts.min() >= 0.0 and pts.max() <= 1.0, f"{path}: coords out of [0,1]"
     return pts
-
 
 def main():
     ap = argparse.ArgumentParser(description="Generate OOD TSP datasets for the distribution-shift study.")
@@ -191,7 +185,6 @@ def main():
         nn = mean_nn_distance(reread)
         print(f"{name:<12}{nn:>14.4f}  {os.path.relpath(path)}")
     print("\nAll files validated: correct shape, finite, coords in [0,1].")
-
 
 if __name__ == "__main__":
     main()

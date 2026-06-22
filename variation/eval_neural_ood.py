@@ -69,7 +69,6 @@ def load_policy(model_path=None, device="cpu"):
             print(f"  [skip] {os.path.basename(path)}: architecture mismatch ({e.__class__.__name__})")
     return None, None
 
-
 def evaluate(data_path, model, device="cpu", num_instances=None,
              num_samples=1280, temperature=1.5, verbose=True):
     """Run greedy + sampling on one distribution file. Returns dict of averages."""
@@ -94,7 +93,6 @@ def evaluate(data_path, model, device="cpu", num_instances=None,
         "sampling": total_sample / n_inst,
         "n": n_inst,
     }
-
 
 def main():
     ap = argparse.ArgumentParser(description="Neural (greedy+sampling) eval on OOD datasets.")
